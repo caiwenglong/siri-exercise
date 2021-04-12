@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>防抖</title>
+</head>
+<body>
+<div id="debounce">
+  <h3>防抖</h3>
+  <div>
+    <input type="text" id="input-debounce"/>
+  </div>
+</div>
+</body>
+<script>
+
+/**
+ *  防抖：就是在规定的时间内只触发一次，如果在该时间内又触发了一次或者多次，那么将会重置这个时间。
+ *  列子：1、比如电脑休眠：当设置十分钟后电脑自动休眠，如果在这一段时间每不碰电脑，那么电脑就会在十分钟后进入休眠，
+ *        但是如果，在这一段时间内碰了鼠标或者键盘，比如五分中后碰了鼠标，那么就会重新计算时间，得在等10分钟后才能进入休眠
+ *        2、比如玩游戏回城：当点击了回城之后，要等8秒才能回城，如果这一段时间内移动了，那么重新回城还要继续等8秒
+ *  应用： 用户在输入框内输入内容搜索的时候，等用户输入完成后才进行搜索，而不是每按一次键就发送一次搜索请求
+ */
+const inputDebounce = document.getElementById('input-debounce')
+let timeoutID
+
+function debounce(fn, wait) {
+  if (timeoutID) {
+    clearTimeout(timeoutID)
+  }
+  timeoutID = setTimeout(() => {
+    fn()
+  }, wait)
+}
+
+
+function sendAjax() {
+  console.log(1)
+}
+
+inputDebounce.addEventListener('keyup', function () {
+  throttle(sendAjax, 300)
+})
+
+/**
+ * 节流：在某一个时间段内只触发一次
+ */
+let throttleTimeOut
+let canExecute = true
+function throttle(fn, wait) {
+  if(canExecute) {
+    throttleTimeOut = setTimeout(() => {
+      fn()
+      canExecute = true
+    }, wait)
+    canExecute = false
+  }
+}
+</script>
+</html>
