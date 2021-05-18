@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>递归</title>
+</head>
+<body>
+    <div>  请输出斐波那契数列前十项： 1，1，2，3，5，8，13，21，34 ...</div>
+    <div>然后请思考代码是否有重复计算，如何解决重复计算问题？</div>
+</body>
+<script>
+    let count = 0; // f方法调用了多少次
+    function f(n) {
+        count += 1;
+        if(n === 0 || n === 1) return 1
+        return f(n-1) + f(n-2);
+    }
+
+    for (let i = 0; i < 10; i++) {
+        console.log(f(i))
+    }
+
+    console.log("使用缓存前！")
+    console.log("f函数调用了" + count + "次！")
+
+    console.log("=========================================")
+
+    let count2 = 0; // f2方法调用了多少次
+    let cache = {} // 使用缓存
+    function f2(n) {
+        count2 += 1;
+        if(cache.hasOwnProperty(n)) {
+            console.log("用缓存")
+            return cache[n]
+        } else {
+            return cache[n] = n === 0 || n === 1 ? 1 : f2(n - 1) + f2(n - 2) // 递归调用f2方法
+        }
+    }
+
+    for (let i = 0; i < 10; i++) {
+        console.log(f2(i))
+    }
+
+    console.log("使用缓存后！")
+    console.log("f2函数调用了" + count2 + "次！")
+
+</script>
+</html>
