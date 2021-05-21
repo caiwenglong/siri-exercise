@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    /**
+     * （ 3sun ）三数之和：找到数组里面和为0的 三个项，且得出的结果不能有重复项
+     * 例如： [-4, -1, 2, 0, 1, -1]，结果：[ [ -1, 2, -1 ], [ -1, 0, -1 ] ]
+     *      不能是[ [ -1, 2, -1 ], [ -1, 0, -1 ]， [ -1, -1, 0] ]
+     * 解决思路：1、首先对数组进行从小到大排序（因为从小排序之后，往后三项的和会逐渐递增，这时就可以通过判断是否大于0 来找零界点）
+     *          2、遍历数组，从0到arr.length - 2为止
+     *              为啥是 length-2呢？
+     *          3、如果当前的数字等于前面一个数字，那么就跳过。（因为要去重）
+     *          4、如果不同，那么就定义一个start指针指向该项的后一项（也就是 start = i + 1），
+     *                      定义一个end指针指向数组的最后一项(也就是 end = length - 1).
+     *                      这时就可以将这三个指针所指的项进行相加，这时候有三种情况：
+     *                          1⃣️：这三项和为0，那么这三项就是我们需要的，将它push到target数组里面（target.push([arr[i], arr[start], arr[end]])）
+     *                          2⃣️：这三项和小于0，那么start 指针就 ++， 让三项的和增大
+     *                          3⃣️：这三项的和大于0，那么 end 指针就 --， 让三项的和减小
+     */
+
+    function getThreeSun(numArr) {
+
+        // 1、首先对数组进行从小到大排序
+        numArr.sort((a, b) => {
+            return a - b
+        })
+
+        let targetArr = []
+
+        // 2、遍历数组，到i < numArr.length - 2 为止, 因为如果不到 -2 为止，那么start 跟 end 的指针会是指向最后一项，没有意义
+        for (let i = 0; i < numArr.length - 2; i++) {
+
+            // 如果后面一个数等于前面一个数，那么就跳过，不做处理，如果不等于，那么就有三种情况
+                if (i === 0 || numArr[i] !== numArr[i -1]) {
+                    // 定义 start 跟 end 两个指针
+                    let start = i + 1
+                    let end = numArr.length - 1
+                    while (start < end) {
+
+                        // 1、三项之和等于 0 的情况
+                        let sum = numArr[i] + numArr[start] + numArr[end]
+                        if (sum === 0) {
+                            targetArr.push([numArr[i], numArr[start], numArr[end]])
+                            start++
+                            end--
+
+                            if(numArr[start] === numArr[start - 1]) {
+                                start ++
+                            }
+
+                            if(numArr[end] === numArr[end + 1]) {
+                                end --
+                            }
+
+                        } else if (sum < 0) {
+                            // 如果小于 0 的情况
+                            start++
+                        } else {
+                            // 大于 0 的情况
+                            end--
+                        }
+                    }
+                } else {
+
+                }
+        }
+
+        return targetArr
+    }
+
+    console.log(getThreeSun([-4, -1, 2, 0, 1, -1, -1, 2, 1]))
+</script>
+
+</body>
+</html>

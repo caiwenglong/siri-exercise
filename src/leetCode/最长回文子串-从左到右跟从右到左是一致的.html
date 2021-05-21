@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    /**
+     * 专业名称：回文子串， 大白话：找出从左到右读跟从右到左读是一致读
+     * 例如：bcdcb:  回文子串就是： bcdcb,   abbd: 最长的回文子串就是：bb
+     * 解法思路：
+     * 1、如果字符串小于2，那么就直接返回该字符串
+     * 2、将每一项都当作中心项，然后对两边扩散，如果满足如下三个条件，那么最长字符串就是 str.slice(left, right + 1)
+     *      1⃣️：如果左边都项等于右边的项 也就是 str[i-1] === str[i + 1]
+     *      2⃣️：左边不越界，也就是 left > 0
+     *      3⃣️：右边不越界，也就是 right < str.length
+     *      
+     */
+    
+    function targetFn(str) {
+
+        if(str.length < 2) {
+            return str
+        }
+
+        let targetStr = ''
+
+        // 这边字符如果小于2， 上面已经return回去了，所以这边字符串肯定不为空，所以回文子串的长度至少为1
+        let maxLength = 1
+
+        function expandAroundCenter(left, right) {
+            while(left >= 0 && right < str.length && str[left] === str[right]) {
+
+                if(maxLength < right - left + 1) {
+                    targetStr = str.slice(left, right + 1)
+                    maxLength = right - left + 1
+                }
+                left --
+                right ++
+            }
+        }
+
+        for (let i = 0; i < str.length; i++) {
+            // 这边调用两次的原因是，字符串的长度可能是奇数， 也可能是 偶数
+            // 如果是偶数 就没有中心点 比如 bbbb 这边就没有中心点，所以第一项不能为 i-1 应该是 i
+            expandAroundCenter(i - 1, i + 1)
+            expandAroundCenter(i, i + 1)
+        }
+
+        return {
+            targetStr,
+            maxLength
+        }
+
+    }
+
+    console.log(targetFn('bbbbcbb'));
+</script>
+
+</body>
+</html>
