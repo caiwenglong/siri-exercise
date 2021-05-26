@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    /**
+     * 给定一个数组，数组的项是字符串，如果字符串中的字符出现的次数是一样的，那么就将这些项归为一组
+     * 例如：[ 'tea', 'coffee', 'eat', 'ate', 'tan', 'nat']
+     * 返回：[
+     *      ['tea', eat, 'ate'], ['coffee'], ['tan, nat']
+     * ]
+     * 思路：1、判断是否是空数组
+     *      2、对每一个字符串都创建一个长度为26(对应26个字母)，每一项初始值都为 0 的数组
+     *      3、遍历每一项字符串，将对应字符出现的次数填充到数组对应的位置
+     *          比如：tea，出现a的次数为1， 那么数组就变成了[ 1, 0, 0, 0, 1, ... 1, 0, 0 ... ]
+     *      4、遍历数组，按照字母出现的频率进行分组归类
+     *      5、遍历数组，将结果返回
+     *
+     */
+
+    function getTargetArr(arr) {
+
+        // 1、判断数组是否为空
+        if(arr.length <= 0) {
+            return []
+        }
+
+        const map = new Map()
+
+        // 遍历数组
+        for(const str of arr) {
+            // 为数组的每一项都创建一个长度为26都数组, 并且每一项都填充为 0
+            let emptyArr = Array(26).fill(0)
+
+            // 遍历每一个字符串，得到字符串里面的字符，并标记出现的次数
+            for (let i = 0; i < str.length; i++) {
+                // 将字符转换为ascii码， 比如 a 对应都就是 97， b对应都就是98，以此类推
+                const index = str.charCodeAt(i) - 97;
+                // 每出现一次，那么数组对应的值就 + 1
+                emptyArr[index] ++
+            }
+
+            // 将数组转换成 字符串当作 map的key，因为如果字符串的字符都一样的话，那么[0,0,0, ...]转换成的字符串就会是一样的
+            const key = emptyArr.join("");
+
+            // 判断 map中是否有对应的key值， 如果有对应的key值，那么将字符串push进去，如果没有那么就给这个key 赋值
+            if(map.has(key)) {
+                map.get(key).push(str)
+            } else {
+                map.set(key, [str])
+            }
+
+        }
+        // 生成的map结构如下所示
+        // {"10001000000000000001000000" ： Array(3), "00102200000000100000000000" ： Array(1), "10000000000001000001000000" ： Array(2)}
+        console.log(map)
+
+        let resultArr = []
+
+        // 对map进行遍历得到里面的值
+        map.forEach((value) => {
+            resultArr.push(value)
+        })
+
+        return resultArr
+
+    }
+
+    console.log(getTargetArr(['tea', 'coffee', 'eat', 'ate', 'tan', 'nat']));
+</script>
+
+</body>
+</html>
