@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+
+<script>
+const merge = function(nums1, m, nums2, n) {
+  let i = m-1,
+    j = n-1,
+    k = m + n -1; // k 表示容器数组nums1尾部索引
+  // 循环边界为其中一个数组遍历完毕
+  debugger
+  while(i>=0 && j>=0) {
+    // 向容器数组nums1尾部填充较大元素
+    if(nums1[i] >= nums2[j]) {
+      nums1[k] = nums1[i];
+      i--;
+      k--;
+    } else {
+      nums1[k] = nums2[j];
+      j--;
+      k--;
+    }
+  }
+  // 如果nums2还有元素剩余
+  while(j>=0) {
+    nums1[k] = nums2[j];
+    j--;
+    k--;
+  }
+}
+
+let nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3;
+merge(nums1, m, nums2, n);
+console.log(nums1);
+</script>
+
+</body>
+</html>

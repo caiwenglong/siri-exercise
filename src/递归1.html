@@ -28,24 +28,16 @@
 
     console.log("=========================================")
 
-    let count2 = 0; // f2方法调用了多少次
+
     let cache = {} // 使用缓存
     function f2(n) {
-        count2 += 1;
+
         if(cache.hasOwnProperty(n)) {
-            console.log("用缓存")
             return cache[n]
         } else {
             return cache[n] = n === 0 || n === 1 ? 1 : f2(n - 1) + f2(n - 2) // 递归调用f2方法
         }
     }
-
-    for (let i = 0; i < 10; i++) {
-        console.log(f2(i))
-    }
-
-    console.log("使用缓存后！")
-    console.log("f2函数调用了" + count2 + "次！")
 
 </script>
 </html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<script>
+/**
+ *  插入排序：
+ *  思想：从左侧第二个项开始，将左侧看成一个有序列表，每一次将右侧的一个数字插入该有序列表，在插入之前先跟左侧的数字进行比较
+ *        如果大于则跟左侧的数字交换位置，否则就直接插入到该位置
+ *  例如： 5、4、8、7、9、2、3 进行排序之后得到 2、3、4、5、7、8、9
+ */
+function insertSort(arr) {
+  // 1、如果数组的长度小于2，则直接返回该数组
+  if(arr.length < 2) {
+    return arr
+  }
+
+  // 2、从第二项开始对数组进行遍历, 所以这边 i 要从2开始
+  for (let i = 1; i < arr.length; i++) {
+
+    let targetNum = i;  // 这个就是右侧的数字
+
+    // 将右侧的项依次跟左侧的项进行对比，直至找到比右侧项更小的数字
+    for (let j = i - 1 ; j >= 0; j--) {
+
+      // 如果右侧的项小于左侧的项，那么就将两项交换位置
+      // 交换位置之后，j跟 i指针都要向左移动一位：也就是 i-- 跟 j --在进行对比
+      // 由于i 不能改变，
+      if(arr[j] > arr[targetNum]) {
+        [ arr[j], arr[targetNum] ] = [ arr[targetNum], arr[j] ]
+        targetNum = j;
+      } else {
+        break
+      }
+    }
+  }
+
+  return arr
+}
+
+console.log(insertSort([5, 4, 8, 7, 9, 2, 3]))
+</script>
+</body>
+</html>
