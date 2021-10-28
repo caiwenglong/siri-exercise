@@ -1,36 +1,58 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
 
-<script>
-    /**
-     * 题目： 在数组里面找到两数之和为指定数的两项
-     * 例如： 在数组中[1,4,5,7,12]找到和为 11 的两项
-     */
+    <script>
+        /**
+         * 题目： 在数组里面找到两数之和为指定数的两项
+         * 例如： 在数组中[1,4,5,7,12]找到和为 11 的两项
+         */
 
-    function getTargetItem(arr, sum) {
-        let map = new Map()
-        for (let i = 0; i < arr.length; i++) {
-            let complement = sum - arr[i]
-            if(map.has(complement)) {
-                return [map.get(complement), i]
-            } else {
-                map.set(arr[i], i)
+        function getTargetItem(arr, sum) {
+            let map = new Map()
+            for (let i = 0; i < arr.length; i++) {
+                let complement = sum - arr[i]
+                if (map.has(complement)) {
+                    return [map.get(complement), i]
+                } else {
+                    map.set(arr[i], i)
+                }
             }
+            return []
         }
-        return []
-    }
 
-    console.log(getTargetItem([1, 4, 5, 7, 12], 11));
-</script>
+        console.log(getTargetItem([1, 4, 5, 7, 12], 11));
+
+
+        var findMaxConsecutiveOnes = function (nums) {
+            var result = 0;
+            var count = 0;
+            for (let i2 = 0; i2 < nums.length; i2++) {
+                if (nums[i2] === 1) {
+                    count++
+                } else {
+                    if (count > result) {
+                        result = count
+                    }
+                    count = 0
+                }
+            }
+            return result
+        };
+
+        console.log(findMaxConsecutiveOnes([1, 1, 0, 1, 1, 1]));
+    </script>
 
 
 </body>
+
 </html>

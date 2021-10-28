@@ -5,16 +5,15 @@
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>防抖</title>
+  <title>Document</title>
 </head>
 <body>
-<div id="debounce">
-  <h3>防抖</h3>
-  <div>
-    <input type="text" id="input-debounce"/>
-  </div>
+
+<div>
+  <span>防抖函数测试：</span>
+  <input id="inputDebounce" type="text">
 </div>
-</body>
+
 <script>
 
 /**
@@ -24,40 +23,84 @@
  *        2、比如玩游戏回城：当点击了回城之后，要等8秒才能回城，如果这一段时间内移动了，那么重新回城还要继续等8秒
  *  应用： 用户在输入框内输入内容搜索的时候，等用户输入完成后才进行搜索，而不是每按一次键就发送一次搜索请求
  */
-const inputDebounce = document.getElementById('input-debounce')
-let timeoutID
-
-function debounce(fn, wait) {
-  if (timeoutID) {
-    clearTimeout(timeoutID)
-  }
-  timeoutID = setTimeout(() => {
-    fn()
-  }, wait)
-}
-
-
-function sendAjax() {
-  console.log(1)
-}
-
-inputDebounce.addEventListener('keyup', function () {
-  throttle(sendAjax, 300)
-})
 
 /**
- * 节流：在某一个时间段内只触发一次
+ * 防抖函数
+ * @param fn
+ * @param delay
  */
-let throttleTimeOut
-let canExecute = true
-function throttle(fn, wait) {
-  if(canExecute) {
-    throttleTimeOut = setTimeout(() => {
-      fn()
-      canExecute = true
-    }, wait)
-    canExecute = false
+const debounce = (fn, delay) => {
+  // 设置一个定时器变量
+  let timeoutID = null
+  return function(args) {
+    const _this = this
+    // 清除上一个定时器
+    clearTimeout(timeoutID)
+    timeoutID = setTimeout(() => {
+
+      // 调用要执行的方法fn
+      fn.call(_this, args)
+
+    }, delay)
   }
 }
+
 </script>
+
+
+<script>
+
+/**
+ * 节流：在delay的时间内只调用一次，比如： delay = 1000, 那么在一秒内只会调用一次，如果调用多次，那么就只要第一次调用的才会生效
+ * @param fn
+ * @param delay：
+ */
+const throttle = (fn, delay) => {
+  let isLock = false
+  return function(args) {
+    if(isLock) return
+    isLock = true
+    const _this = this
+    setTimeout(() => {
+      fn.call(_this, args)
+      isLock = false
+    },delay)
+  }
+}
+
+</script>
+
+<script>
+
+
+// 获得input元素
+const inputEle = document.getElementById("inputDebounce")
+
+//模拟一段ajax请求
+function ajax(content) {
+  console.log('ajax request： ' + content)
+}
+
+// 目的： 等用户输完信息在开始调用，使用防抖函数
+const debounceAjax = debounce(ajax, 1000)
+
+const throttleAjax = throttle(ajax, 1000)
+
+// 给input绑定键盘敲击事件
+inputEle.addEventListener("keyup", (e) => {
+  // 未使用防抖函数，每按一次键盘，就会立即触发keyup事件
+  // ajax(e.target.value)
+
+  // 使用防抖函数后，之后触发最后一次的调用
+  // debounceAjax(e.target.value)
+
+  // 使用节流函数后，在规定的时间内触发多次，只有第一次会被调用
+  throttleAjax(e.target.value)
+})
+
+
+
+</script>
+
+</body>
 </html>
