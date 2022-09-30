@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js 事件循环</title>
+</head>
+
+<body>
+    <script>
+
+        console.log('1');
+
+        new Promise((resolve, reject) => {
+            console.log('2')
+            resolve()
+        }).then(() => {
+            console.log('3')
+        }).then(() => {
+            console.log('4')
+        })
+
+        Promise.resolve().then(() => {
+            console.log('5')
+        })
+
+        let _promise = () => new Promise((resolve, reject) => {
+            console.log('6')
+            resolve()
+        })
+
+        setTimeout(() => {
+            console.log('7')
+            Promise.resolve().then(() => {
+                console.log('8')
+            })
+        }, 100)
+
+        setTimeout(() => {
+            console.log('9')
+        }, 0)
+
+        _promise().then(() => {
+            console.log('10')
+        })
+
+        console.log('11');
+
+    </script>
+</body>
+
+</html>

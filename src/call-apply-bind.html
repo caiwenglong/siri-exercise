@@ -1,57 +1,120 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 </head>
+
 <body>
 
 
-<script>
-// 找茬2：我们默认定义context.say = this  fn如果已经被占用 嘎嘎 sb了。 不怕 搞定它
+  <script>
 
-// say需要是一个唯一值 是不是突然想到es6的新类型 Symbol   fn = Symbol() 不过我们装逼不嫌事大 都说自己实现了
 
-function mySymbol(obj) {
-  // 不要问我为什么这么写，我也不知道就感觉这样nb
-  let unique = (Math.random() + new Date().getTime()).toString(32).slice(0, 8)
-  // 牛逼也要严谨
-  if (obj.hasOwnProperty(unique)) {
-    return mySymbol(obj) //递归调用
-  } else {
-    return unique
-  }
-}
-//接下来我们一并把多参数和执行完删除自定义方法删除掉一块搞定
-Function.prototype.myCall = function(context) {
-  // 如果没有传或传的值为空对象 context指向window
-  context = context || window
-  let fn = mySymbol(context)
-  context[fn] = this //给context添加一个方法 指向this
-  // 处理参数 去除第一个参数this 其它传入fn函数
-  let arg = [...arguments].slice(1) //[...xxx]把类数组变成数组，arguments为啥不是数组自行搜索 slice返回一个新数组
-  context[fn](...arg) //执行fn
-  delete context[fn] //删除方法
-}
+    // 首先来只猫
+    Animal = {
+      name: 'Tom',
+      say(age, category) {
+        console.log(`我叫${this.name}, 今年${age}岁了, 是一只${category}`)
+      }
+    }
 
-let Person = {
-  name: 'Tom',
-  say(age) {
-    console.log(this)
-    console.log(`我叫${this.name}我今年${age}`)
-  }
-}
+    // 再来只老鼠
+    Animal1 = {
+      name: 'Jerry'
+    }
 
-Person1 = {
-  name: 'Tom1'
-}
+    /**
+     * 从call的用法可以看出它接收N个参数:
+     * 1、target: 第一个对象是this要指向的对象
+     * 2、从第二个参数开始就要用 ...args 接收  这个也是跟apply的区别
+     */
+    Function.prototype.myCall1 = function (target, ...args) {
+      let result;
+      target = target || window // 传入的对象
 
-Person.say.myCall(Person1,18)//我叫Tom1我今年18
+      // 在target对象上面新建一个字段来存储被调用的方法，这边就是 say()
+      target["say"] = this
+      // 下面调用方式就先相当于 target.say()， 这样say里面的this指向就是 target
+      result = target["say"](...args)
 
-</script>
+      //  执行完借用的函数后，要删除掉。这只是借用，要归还的，不能占为己有，不道德
+      delete target["say"]
+      return result
+
+      /**************************************************************/
+
+      // 上面的往 target 添加 say 字段有点不严谨，
+      // 如果 target 本身就有 say 这个属性，那就BaBiQ了吗？
+      // 所以这时 Symbol() 就要登场了: 
+      // 因为每个从 Symbol() 返回的 symbol 值都是唯一的，这样就不存在冲突这种东西了
+      // 所有这时候就要升级进化一下了，进化结果如下：myCall2
+
+      /**************************************************************/
+
+    }
+
+
+
+    /**
+     * 从call的用法可以看出它接收N个参数:
+     * 1、target: 第一个对象是this要指向的对象
+     * 2、从第二个参数开始就要用 ...args 接收  这个也是跟apply的区别
+     */
+    Function.prototype.myCall2 = function (target, ...args) {
+      let result;
+      target = target || window // 传入的对象
+
+      // 在传入的对象上面新建一个属性字段来存放被调用的方法  这边就是say()方法
+      const newFnName = Symbol()
+      // 这边的this就是 say(), 赋值完成后 target[newFnName]就相当于say() 
+      target[newFnName] = this
+      // 下面调用方式就先相当于 target.say()， 这样say里面的this指向就是 target
+      result = target[newFnName](...args)
+
+      //  执行完借用的函数后，要删除掉。这只是借用，要归还的，不能占为己有，不道德
+      delete target[newFnName]
+
+      // 返回执行的结果
+      return result
+    }
+
+    /* 
+      跟call的区别就是
+      call的参数是一个一个传入的，而apply的第二个参数是数组
+      比如： call(target, arg1, arg2, ...)
+            apply(target, [arg1, arg2, ...])
+    */
+    Function.prototype.myApply = function (target, args) {
+      let result;
+      target = target || window
+      const newFuName = Symbol()
+      target[newFuName] = this
+      result = target[newFuName](...args)
+      delete target[newFnName]
+      return result
+    }
+
+
+
+    Animal.say("3", '猫') // 我叫Tom, 今年3岁了, 是一只猫
+    Animal.say.myCall2(Animal1, 2, '老鼠') // 我叫Jerry, 今年2岁了, 是一只老鼠
+
+
+
+    Animal.say("3", '猫') // 我叫Tom, 今年3岁了, 是一只猫
+    Animal.say.myApply(Animal1, [2, '老鼠']) // 我叫Jerry, 今年2岁了, 是一只老鼠
+
+
+
+
+
+  </script>
 
 </body>
+
 </html>
