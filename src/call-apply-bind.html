@@ -18,8 +18,8 @@
     // 首先来只猫
     Animal = {
       name: 'Tom',
-      say(age, category) {
-        console.log(`我叫${this.name}, 今年${age}岁了, 是一只${category}`)
+      say(age, category, ...args) {
+        console.log(`我叫${this.name}, 今年${age}岁了, 是一只${category}, args: ${args}`)
       }
     }
 
@@ -92,11 +92,25 @@
     Function.prototype.myApply = function (target, args) {
       let result;
       target = target || window
-      const newFuName = Symbol()
-      target[newFuName] = this
-      result = target[newFuName](...args)
+      const newFnName = Symbol()
+      target[newFnName] = this
+      result = target[newFnName](...args)
       delete target[newFnName]
       return result
+    }
+
+
+    Function.prototype.myBind = function (target, ...outArgs) {
+      target = target || {} // 处理边界情况
+
+      const newFnName = Symbol()
+      target[newFnName] = this // this 就是要借用的方法
+
+      // bind 返回的是一个函数，这个函数也可以接收多个参数
+      return function (...innerArgs) {
+        let result = target[newFnName](...outArgs, ...innerArgs)
+        return result
+      }
     }
 
 
@@ -109,6 +123,9 @@
     Animal.say("3", '猫') // 我叫Tom, 今年3岁了, 是一只猫
     Animal.say.myApply(Animal1, [2, '老鼠']) // 我叫Jerry, 今年2岁了, 是一只老鼠
 
+
+    const newSay = Animal.say.myBind(Animal1, 2)
+    newSay("老鼠", 2) // hello,我叫Jerry, 今年2岁了, 是一只老鼠
 
 
 
