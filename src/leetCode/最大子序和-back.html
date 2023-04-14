@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    /**
+     * 题目：给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+     * 例如：nums = [-2,1,-3,4,-1,2,1,-5,4]
+     * 输出：6
+     * 解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+     * 算法思路：判断一下是否要舍弃前面的项，新开一个数组，判断的依据就是 前面所有的项加起来 再加上当前项是否大于当前项
+     *          如果大于当前项，那么就将当前项添加到原来项的后面，如果小于当前项，那么就新开一个数组，以当前项为第一项
+     *          比如：遍历到第一项的时候， 1 + -2 < 1, 那么就新开一个数组 从1 开始 [1
+     *              遍历到第二项的时候 1 + -3 > -3, 那么就讲这一项添加到原来的数组后面，[ 1, -3
+     *              遍历到第三项的时候 1 + -3 + 4 < 4, 那么就新开一个数组得到 [ 4
+     *              遍历到第四项的时候 4 + -1 > -1  --> [ 4, -1]
+     *              第五项 4 + -1 + 2 > 2 --- > [4, -1, 2
+     *              第六项 4 + -1 + 2 + 1 > 1 --- [4, -1, 2, 1
+     *              第七项 4 + -1 + 2 + 1 + -5 > -5 --- [4, -1, 2, 1
+     */
+
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    const maxSubArray = function(nums) {
+
+        // 1、首先判断边界情况
+        if(nums.length === 1) {
+            return nums[0]
+        }
+
+        // 定义一个数组，用来存储前面项的和
+        // 比如：当遍历到第一个数的时候，最大的和就 -2，第二项的时候最大值就是1，第三项的时候就是-2
+        let sunArr = []
+
+        sunArr[0] = nums[0]
+        let maxValue = sunArr[0]
+
+        // 循环遍历每一个项
+        for (let i = 1; i < nums.length; i++) {
+            let newTotalValue = getTotalValue(sunArr) + nums[i]
+            newTotalValue > nums[i] ? sunArr.push(nums[i]) : sunArr = [nums[i]]
+        }
+
+        console.log(sunArr)
+        return maxValue
+
+    };
+
+    function getTotalValue(arr) {
+        let totalValue = 0
+        for (let i = 0; i < arr.length; i++) {
+            totalValue += arr[i]
+        }
+        return totalValue
+    }
+
+    console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]));
+</script>
+
+</body>
+</html>
