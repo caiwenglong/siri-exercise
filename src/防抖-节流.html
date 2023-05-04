@@ -58,6 +58,7 @@ const debounce = (fn, delay) => {
 const throttle = (fn, delay) => {
   let isLock = false
   return function(args) {
+    console.log(isLock)
     if(isLock) return
     isLock = true
     const _this = this

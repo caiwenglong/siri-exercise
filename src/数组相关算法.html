@@ -157,13 +157,18 @@ var longestCommonPrefix = function(strs) {
     return strs[0] ? strs[0] : ''
   }
   strs.sort((a, b) => a.length - b.length)
-  strs.map(item => {
-    return [...item]
-  })
-  for (let i = 0; i < strs[0].length; i++) {
-    strs[0][i]
+  let returnStr = strs[0];
+  for (let i = 0; i < strs.length; i++) {
+    if(!strs[i].startsWith(returnStr)) {
+      returnStr.splice(returnStr.length - 1, 1);
+      break;
+    }
   }
+
+  return returnStr;
 };
+
+console.log(longestCommonPrefix(["flower","flow","flight"]));
 
 /**
  * 零矩阵
