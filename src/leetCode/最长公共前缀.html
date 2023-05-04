@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    const targetArr = ['aaaaaa', 'aaaaaaawsdfsfsdf', 'aaaaaadfsfs']
+
+    function getMaxLengthPrefix(strs) {
+
+      // 如果数组为空，则返回空字符串
+      if (!strs.length) {
+        return ''
+      }
+
+      // 刚开始最大公共前缀取数组的第一项
+      let maxLengthPrefix = strs[0]
+
+      for (let i = 1; i < strs.length; i++) {
+        // 遍历数组余下的每一项， 将数组剩余的项跟第一项对比
+        let j = 0
+        for (; j < maxLengthPrefix.length && j < strs[i].length; j++) {
+          // 如果有字符不相等，则停止对比
+          if (maxLengthPrefix[j] != strs[i][j]) {
+            break
+          }
+        }
+        // 截取前面公共前缀赋值给maxLengthPrefix
+        maxLengthPrefix = maxLengthPrefix.substr(0, j)
+        // 如果maxLengthPrefix为空， 则没必要对比后面的项。直接返回空字符串
+        if (maxLengthPrefix == '') {
+          return ''
+        }
+      }
+
+      return maxLengthPrefix;
+
+    }
+
+    console.log(getMaxLengthPrefix(targetArr));
+  </script>
+</body>
+
+</html>

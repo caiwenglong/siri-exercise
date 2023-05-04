@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深拷贝</title>
+</head>
+
+<body>
+    <script>
+
+        //  检查类型
+        function checkType(target) {
+            return Object.prototype.toString.call(target).slice(8, -1)
+        }
+
+        // 深拷贝
+        function deepClone(target, hash = new WeakMap()) {
+            // 如果传入的target是简单类型，不是{} || [],则直接返回
+            if (typeof target !== "object") {
+                return target
+            }
+
+            // 判断传入的参数类型
+            var targetType = checkType(target)
+            // 通过类型来创建初始化存储结果
+            let result = targetType === 'Object' ? {} : []
+
+            // 如果传入的参数是数组
+            if (targetType === 'Array') {
+                // 循环数组，得到值
+                for (const [key, value] of target) {
+                    // 判断一下得到的值是否是对象或者是数组
+                    if (checkType(value) === 'Object' || checkType(value) === 'Array') {
+                        // 如果是对象或者是数组就继续深度克隆
+                        result[key] = deepClone(value)
+                    } else {
+                        // 如果是基本类型则直接赋值给数组项
+                        result[key] = value
+                    }
+
+                }
+            } else if (targetType === 'Object') { // 如果传入的参数是 对象
+
+                for (const key in target) {
+                    if (Object.hasOwnProperty.call(target, key)) {
+                        // 获取到对象的属性值
+                        const value = target[key];
+
+                        if (checkType(value) === 'Object' || checkType(value) === 'Array') {
+                            // 如果是对象或者是数组就继续深度克隆
+                            result[key] = deepClone(value)
+                        } else {
+                            // 如果是基本类型则直接赋值给数组项
+                            result[key] = value
+                        }
+
+                    }
+                }
+
+
+            }
+
+            return result
+
+        }
+
+
+
+        function isFunction(val) {
+            return Object.prototype.toString.call(val) === '[object Function]'
+        }
+        function isObject(val) {
+            return Object.prototype.toString.call(val) === '[object Object]'
+        }
+        function isArray(val) {
+            return Object.prototype.toString.call(val) === '[object Array]'
+        }
+        function isSet(val) {
+            return Object.prototype.toString.call(val) === '[object Set]'
+        }
+        function isMap(val) {
+            return Object.prototype.toString.call(val) === '[object Map]'
+        }
+        function isSymbol(val) {
+            return Object.prototype.toString.call(val) === '[object Symbol]'
+        }
+        function isDate(val) {
+            return Object.prototype.toString.call(val) === '[object Date]'
+        }
+
+        function ArrayBuffer(val) {
+            return Object.prototype.toString.call(val) === '[object ArrayBuffer]'
+        }
+
+        const forEachValue = (obj, fn) => Object.keys(obj).forEach(key => fn(obj[key], key))
+
+        function deepClone1(val, weakMap = new WeakMap()) {
+            if (isDate(val)) return new Date(+val)
+
+            if (isMap(val)) {
+                const map = new Map()
+                for (const item of val) map.set(deepClone(item[0], weakMap), deepClone(item[1], weakMap))
+                return map
+            }
+
+            if (isSet(val)) {
+                const set = new Set()
+                val.forEach(item => set.add(deepClone(item), weakMap))
+                return set
+            }
+
+            if (isSymbol(val)) return Symbol(val.description)
+
+            if (isFunction(val)) {
+                if (/^function|^\(\)/.test(val.toString())) {
+                    return new Function(`return ${val.toString()}`)()
+                } else {
+                    return new Function(`return function ${val.toString()}`)()
+                }
+            }
+
+            if (!isObject(val)) return val
+
+            const obj = isArray(val) ? [] : {}
+
+            if (weakMap.has(val)) return weakMap.get(val)
+
+            weakMap.set(val, obj)
+            forEachValue(val, (val, key) => obj[key] = deepClone(val, weakMap))
+
+            const symbols = Object.getOwnPropertySymbols(val)
+            forEachValue(symbols, key => obj[Symbol(key.description)] = deepClone(symbols[key], weakMap))
+
+            return obj
+        }
+
+
+        function deepClone2(obj, hash = new WeakMap()) {
+            if (hash.has(obj)) {
+                return obj;
+            }
+            let res = null;
+            const reference = [Date, RegExp, Set, WeakSet, Map, WeakMap, Error];
+
+            if (reference.includes(obj?.constructor)) {
+                res = new obj.constructor(obj);
+            } else if (Array.isArray(obj)) {
+                res = [];
+                obj.forEach((e, i) => {
+                    res[i] = deepClone(e);
+                });
+            } else if (typeof obj === "object" && obj !== null) {
+                hash.set(obj);
+                res = {};
+                for (const key in obj) {
+                    if (Object.hasOwnProperty.call(obj, key)) {
+                        res[key] = deepClone(obj[key], hash);
+                    }
+                }
+            } else {
+                res = obj;
+            }
+            return res;
+        }
+
+
+        const symboLain = Symbol('lain')
+        const symboSaber = Symbol('saber')
+
+        const lain = {
+            name: "lain",
+            friend: {
+                name: "saber",
+                fruits: ['cherry', 'peack', 'watermelon'],
+                friend: {
+                    name: '樱岛麻衣',
+                    foo() {
+                        console.log(`樱岛麻衣 foo~`);
+                    },
+                },
+                foo() {
+                    console.log("saber foo~")
+                }
+            },
+            foo() {
+                console.log("lain foo~")
+            },
+            [new Date]: new Date(),
+            [symboLain]: symboLain,
+            [symboSaber]: symboSaber,
+            symboLain: symboSaber,
+
+            set: new Set(['入间同学', '蝶祈', '枫', { a: 1, b: 2 }]),
+            map: new Map([['age1', 16], ['age2', 17], ['age3', 18], ['obj', { a: 1, b: 2 }]]),
+        }
+
+        console.log(lain);
+        console.log(deepClone(lain));
+        console.log(deepClone1(lain).friend.fruits);
+        console.log(deepClone2(lain));
+    </script>
+</body>
+
+</html>

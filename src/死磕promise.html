@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不会手撕promise，就手撕你 ~。。~</title>
+</head>
+
+<body>
+    <script>
+
+        const STATE_PENDING = 'pending'
+        const STATE_FULFILLED = 'fulfilled'
+        const STATE_REJECTED = 'rejected'
+
+        function MyPromise(fn) {
+            this.promiseState = STATE_PENDING
+            this.promiseValue = undefined
+            this.callbacks = []
+            const self = this
+
+            function resolve(data) {
+                if (self.promiseState !== STATE_PENDING) return
+                self.promiseState = STATE_FULFILLED
+                self.promiseValue = data
+
+                self.callbacks.forEach(callback => {
+                    callback.onResolve(self.promiseValue)
+                })
+            }
+
+            function reject(error) {
+                if (self.promiseState !== STATE_PENDING) return
+                self.promiseState = STATE_REJECTED
+                self.promiseValue = error
+
+                self.callbacks.forEach(callback => {
+                    callback.onReject(self.promiseValue)
+                })
+
+            }
+
+            try {
+                fn(resolve, reject)
+            } catch (error) {
+                reject(error)
+            }
+        }
+
+        MyPromise.prototype.then = function (thenCallback, catchCallback) {
+            const self = this
+            return new MyPromise((resolve, reject) => {
+
+                if (self.promiseState === STATE_FULFILLED) {
+                    const result = thenCallback(self.promiseValue)
+                    if (result instanceof MyPromise) {
+                        result.then(v => {
+                            resolve(v)
+                        }, e => {
+                            reject(e)
+                        })
+                    } else {
+                        resolve(result)
+                    }
+                }
+
+                if (self.promiseState === STATE_REJECTED) {
+                    const result = catchCallback(self.promiseValue)
+                    if (result instanceof MyPromise) {
+                        result.then(v => {
+                            resolve(v)
+                        }, e => {
+                            reject(e)
+                        })
+                    } else {
+                        reject(result)
+                    }
+                }
+
+                if (self.promiseState === STATE_PENDING) {
+                    self.callbacks.push({
+                        onResolve: () => {
+                            const result = thenCallback(self.promiseValue)
+                            if (result instanceof MyPromise) {
+                                result.then(v => {
+                                    resolve(v)
+                                }, e => {
+                                    reject(e)
+                                })
+                            } else {
+                                reject(result)
+                            }
+                        },
+                        onReject: () => {
+                            const result = catchCallback(self.promiseValue)
+                            if (result instanceof MyPromise) {
+                                result.then(v => {
+                                    resolve(v)
+                                }, e => {
+                                    reject(e)
+                                })
+                            } else {
+                                reject(result)
+                            }
+                        }
+                    })
+                }
+            })
+        }
+
+        MyPromise.prototype.catch = function (onReject) {
+            return this.then(undefined, onReject)
+        }
+
+        MyPromise.resolve = function (data) {
+            return new MyPromise((resolve, reject) => {
+                if (data instanceof MyPromise) {
+                    data.then(v => {
+                        resolve(v)
+                    }, e => {
+                        reject(e)
+                    })
+                } else {
+                    resolve(data)
+                }
+            })
+        }
+
+        MyPromise.reject = function (error) {
+            return new MyPromise((resolve, reject) => {
+                reject(error)
+            })
+        }
+
+        MyPromise.all = function (promiseLists) {
+            return new MyPromise((resolve, reject) => {
+                let promiseResults = []
+                let count = 0
+
+                for (let i = 0, len = promiseLists.length; i < len; i++) {
+                    let promiseItem = promiseLists[i]
+                    if (!(promiseItem instanceof MyPromise)) {
+                        promiseItem = MyPromise.resolve(promiseItem)
+                    }
+
+                    promiseItem.then(v => {
+                        promiseResults.push(v)
+                        count++
+                        if (count === len) {
+                            resolve(promiseResults)
+                        }
+                    }, e => {
+                        reject(e)
+                    })
+                }
+            })
+        }
+
+        MyPromise.race = function (promiseAry) {
+            return new Promise((resolve, reject) => {
+                for (let i = 0; i < promiseAry.length; i++) {
+                    promiseAry[i].then(resolve, reject)
+                }
+            })
+        }
+
+
+        MyPromise.myRace = function (list) {
+            return new MyPromise((resolve, reject) => {
+                list.map((item, index) => {
+                    // 把数据都处理成Promise
+                    MyPromise.resolve(item).then(
+                        res => {
+                            resolve(res)
+                        },
+                        err => {
+                            reject(err)
+                        }
+                    )
+                })
+            })
+        }
+
+        const promise1 = MyPromise.resolve(3);
+        const promise2 = 42;
+        const promise3 = new MyPromise((resolve, reject) => {
+            setTimeout(resolve, 100, 'foo');
+        });
+
+        MyPromise.myRace([promise3, promise1, promise2]).then((values) => {
+            console.log(values);
+        });
+
+    </script>
+</body>
+
+</html>

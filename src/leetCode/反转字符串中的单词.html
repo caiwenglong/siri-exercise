@@ -1,0 +1,61 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-10-22 16:58:42
+ * @LastEditTime: 2021-10-26 15:13:10
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \siri-exercise\src\leetCode\反转字符串中的单词.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>反转字符串中的单词</title>
+</head>
+
+<body>
+  <script>
+    /**
+     * @param {string} s
+     * @return {string}
+     */
+    var reverseWords = function (s) {
+      s = s.split(" ")
+      let ret = ""
+      s.forEach(function (item, index) {
+        let space = index === s.length - 1 ? "" : " "
+        ret = ret + item.split("").reverse().join("") + space
+      })
+      return ret
+    };
+
+    console.log(reverseWords("Let's take LeetCode contest"))
+
+
+    var strStr = function (haystack, needle) {
+      if (needle === "") return 0
+
+      let start = 0
+      for (let i = 0; i < haystack.length; i++) {
+        if (haystack[i] == needle[start]) {
+          if (start === needle.length - 1) {
+            return i - start
+            break
+          }
+          start++
+        } else {
+          i = i - start
+          start = 0
+        }
+      }
+      return -1
+    };
+
+    console.log(strStr("mississippi", "issip"));
+  </script>
+</body>
+
+</html>

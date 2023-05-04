@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求最长递增子序列的个数</title>
+</head>
+<body>
+    <!-- 
+        例如：给一个数组[ 3, 2, 8, 9, 5, 6, 7, 11, 15, 4]
+
+            - 如果下面遇到的值比数组里面 最后一项 的值大，那么直接放数组后面
+            - 如果遇到的值比数组里面 最后一项 的值还小，
+               那么就需要通过二分查找找到比当前值大的值，然后替换掉
+
+            - 最后我们可以通过标记索引的方式，通过目标数组最后一项将结果还原
+
+        1、首先 第一个数不用比 直接放进来 [ 3 ]
+        2、接着往下走，2 比 3 小 那么就将3 替换掉 [ 2 ]
+        3、接着往下走，8 比 2 大，那么将 8 添加到数组最后一项 【 2 ，8 】
+        4、接着往下走，9 比 8 大，那么将 9 添加到数组最后一项 【 2 , 8 , 9 】
+        5、接着往下走，5 比 8 小，那么将 8 替换成 5 【 2 , 5 , 9 】
+        6、接着往下走，6 比 9 小，那么将 9 替换成 6 【 2 , 5 , 6 】
+        7、接着往下走，7 比 数组里面的值都大，那么将 7 添加到数组最后一项【 2 , 5 , 6 ，7 】
+        8、接着往下走，11 比 数组里面的值都大，那么将 11 添加到数组最后一项【 2 , 5 , 6 ，7 ，11 】
+        9、接着往下走，15 比 数组里面的值都大，那么将 15 添加到数组最后一项【 2 , 5 , 6 ，7 ，11， 15 】
+        9、接着往下走，4 比 5 小，那么将 5 替换成4【 2 , 4 , 6 ，7 ，11， 15 】
+        
+     -->
+    <script>
+
+        const targetArr = [ 3, 2, 8, 9, 5, 6, 7, 11, 15, 4]
+        function getSequence(arr) {
+            
+            const length = arr.length
+            const result = [] // 这个数组放的是索引值
+
+            // 标记索引数组，用来还原正确的值的顺序
+            const indexArr = new Array(length).fill(0) 
+            
+            let currentValue // 当前值
+            let resultLastValue // 索引数组最后一项的值对应的数值
+
+            let resultStart
+            let resultEnd
+            let middle
+
+            for(let i = 0; i < length; i++ ) {
+                currentValue = arr[i] // 当前值
+                if(i === 0) {
+                    // 如果是数组的第一个数，则直接放入目标数组
+                    result.push(i)
+                } else {
+                    resultLastIndex = result[result.length - 1]; // 目标索引数组的最后一项
+                    resultLastValue = arr[resultLastIndex]
+                    // 如果当前值比目标数组最后一个值还大，那么就直接添加到目标数组里
+                    if(currentValue > resultLastValue) {
+                        result.push(i)
+                        
+                        // 记住前面一项的索引【
+                        indexArr[i] = resultLastIndex
+                    }
+
+                    if(currentValue === 5) {
+                        debugger
+                    }
+
+                    // 如果当前值比目标数组最后一项的值还小，
+                    // 那么就需要通过二分查找找出第一个比当前值大的值，然后替换掉
+                    // 递增序列，采用二分查找是最快的查找方式
+                    // 二分查找就是将数组一分为二，从数组中间开始找
+                    if(currentValue < resultLastValue) {
+                        resultStart = 0
+                        resultEnd = result.length - 1
+                        
+                        while(resultStart < resultEnd) { // start === end的时候就停止查找了
+                            middle = ((resultStart + resultEnd) / 2) | 0 // 取整
+
+                            if(arr[result[middle]] < currentValue) {
+                                resultStart = middle + 1
+                            } else {
+                                resultEnd = middle
+                            }
+                        }
+
+                        // 找到中间值后，需要做替换，这时 start跟end的值时一样的
+                        // 这边就是贪心算法，永远将比较小的值放到数组里面
+                        if(arr[result[resultEnd]] > currentValue) { 
+                            result[resultEnd] = i
+                            // 记住前面一项的索引
+                            indexArr[i] = result[resultEnd - 1]
+                        }
+                    }
+                }
+            }
+
+            // 得到标记索引数组之后就可以通过result的最后一项来进行追溯
+            let resultLength = result.length
+            let last = result[resultLength - 1] // 找到最后一项
+            // 从result数组最后一项开始（因为最后一项肯定是最大值），从最后一项往前循环
+            while(resultLength-- > 0) { //  倒叙追溯
+                result[resultLength] = last
+                last = indexArr[last]
+            }
+            
+
+            return result
+        }
+
+        console.log(getSequence(targetArr))
+        
+        
+
+    </script>
+
+</body>
+</html>

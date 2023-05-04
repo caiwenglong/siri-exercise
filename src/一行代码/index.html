@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一行代码</title>
+</head>
+
+<body>
+    <script>
+        // 检查对象是否为空
+        const isEmptyObj = obj => Reflect.ownKeys(obj).length === 0 && obj.constructor === Object
+        console.log(isEmptyObj({}));
+        console.log({} == {});
+
+        // 字符串首字母改为大写
+        var str1 = 'abcde'
+        console.log(str1.charAt(0).toUpperCase() + str1.slice(1));
+
+        // 反转字符串
+        console.log(str1.split('').reverse().join(''));
+
+        // 数组去重
+        var arr = [1, 2, 2, 5, 5, 7, 9, 9, 9]
+        console.log([...new Set(arr)]);
+
+        // 判断数组为空
+        console.log(Array.isArray(arr) && arr.length === 0);
+
+        // 判断奇偶
+        var isOddNumber = num => num % 2 === 0
+        console.log(isOddNumber(2));
+
+        const average = args => args.reduce((a, b) => a + b) / args.length
+        console.log(average([1, 2, 3, 4, 5]));
+
+        function a(...args) {
+            console.log(args)
+        }
+        a(1, 2, 3, 4, 5)
+
+
+        var isValidSudoku = function (board) {
+            let row = {}
+            let col = {}
+            let box = {}
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board[i].length; j++) {
+                    let num = board[i][j]
+                    if (num !== '.') {
+                        let boxindex = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+                        if (row[i + '' + num] || col[j + '' + num] || box[boxindex + '' + num]) {
+                            return false
+                        }
+                        row[i + '' + num] = true
+                        col[j + '' + num] = true
+                        box[boxindex + '' + num] = true
+                    }
+                }
+            }
+            return true;
+        }
+        var board =
+            [["8", "3", ".", ".", "7", ".", ".", ".", "."]
+                , ["6", ".", ".", "1", "9", "5", ".", ".", "."]
+                , [".", "9", "8", ".", ".", ".", ".", "6", "."]
+                , ["8", ".", ".", ".", "6", ".", ".", ".", "3"]
+                , ["4", ".", ".", "8", ".", "3", ".", ".", "1"]
+                , ["7", ".", ".", ".", "2", ".", ".", ".", "6"]
+                , [".", "6", ".", ".", ".", ".", "2", "8", "."]
+                , [".", ".", ".", "4", "1", "9", ".", ".", "5"]
+                , [".", ".", ".", ".", "8", ".", ".", "7", "9"]]
+        console.log(isValidSudoku(board));
+
+
+        var findMedianSortedArrays = function (nums1, nums2) {
+            var newNum = nums1.concat(nums2)
+            newNum.sort((a, b) => a - b); console.log(newNum)
+            var value = undefined
+            if (newNum % 2 === 0) {
+                value = (newNum[newNum.length / 2] + newNum[newNum.length / 2 - 1]) / 2
+            } else {
+                value = newNum[Math.ceil(newNum.length / 2)]
+            }
+            return value
+        }; console.log(findMedianSortedArrays([1, 2], [3, 4]));
+
+
+        var reverse = function (x) {
+            let result = x + ''
+            result = result.split('')
+
+            if (result[0] === '-') {
+                result.splice(0, 1)
+                result = result.reverse()
+                if (parseInt(result.join('')) > 2 ** 31) {
+                    return 0
+                }
+                result.unshift('-')
+                result = result.join('')
+
+            } else {
+                result = result.reverse()
+                result = parseInt(result.join(''))
+                if (result > 2 ** 31 - 1) {
+                    return 0
+                }
+            }
+
+            return result
+        };
+
+        console.log(reverse(2 ** 31));
+
+
+
+        var isPalindrome = function (x) {
+            let point = 0
+            x = x + ''
+            const len = x.length
+            if (len <= 1) {
+                return true
+            }
+
+            if (len % 2 === 0) {
+                if (x[len / 2] !== x[len / 2 - 1]) {
+                    return false
+                }
+                while (len / 2 + point <= len && len / 2 - 1 - point >= 0) {
+
+                    if (x[len / 2 - 1 - point] !== x[len / 2 + point]) {
+                        return false
+                    }
+                    point++
+                }
+            } else {
+
+                while (Math.floor(len / 2) + point <= len && Math.floor(len / 2) - point >= 0) {
+                    if (x[Math.floor(len / 2) - point] !== x[Math.floor(len / 2) + point]) {
+                        return false
+                    }
+                    point++
+                }
+            }
+
+            return true
+        };
+        console.log(isPalindrome(-10));
+
+
+        var threeSum = function (nums) {
+
+            let result = []
+            nums = nums.sort((a, b) => a - b) // 给数组排序
+            if (!nums || nums.length < 3) return result // 如果数组长度小于3 则直接返回
+
+            for (let i = 0; i < nums.length; i++) {
+
+                // 如果是最小的一个数大于0 那么接下来的数相加肯定大于0
+                if (nums[i] > 0) return result
+
+                // 如果nums[i] === nums[i+1] 则继续
+                if (nums[i] === nums[i + 1]) continue;
+
+                let L = i + 1
+                let R = nums.length - 1
+                while (L < R) {
+                    if (nums[i] + nums[L] + nums[R] < 0) {
+                        L++
+                    } else if (nums[i] + nums[L] + nums[R] > 0) {
+                        R--
+                    } else {
+                        result.push([i, L, R])
+                        L++
+                        R--
+                    }
+                }
+            }
+
+        };
+
+        var isMatch = function (s, p) {
+            let index1 = p.indexOf(".")
+            let index2 = p.indexOf("*")
+
+            if (p === '.*') {
+                return true
+            }
+
+            if (index1 === index2 === -1) {
+                if (s === p) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            if (index1 === -1 && index2 > -1) {
+
+            }
+        };
+
+        var threeSumClosest = function (nums, target) {
+            // 升序排序
+            nums.sort((a, b) => a - b);
+            // 初始化一个最小值
+            let min = Infinity;
+            const len = nums.length;
+            for (let i = 0; i < len - 2; i++) {
+                // 定义左右指针
+                let left = i + 1, right = len - 1;
+                while (left < right) {
+                    // 当前三数之和
+                    const sum = nums[i] + nums[left] + nums[right];
+                    // 如果当前和更接近，更新最小值
+                    if (Math.abs(sum - target) < Math.abs(min - target)) {
+                        min = sum;
+                    }
+                    // 根据sum和target的关系，移动指针
+                    if (sum < target) {
+                        left++;
+                    } else if (sum > target) {
+                        right--;
+                    } else {
+                        // sum和target相等，直接返回sum，肯定是最小的了
+                        return sum;
+                    }
+                }
+            }
+            // 遍历结束，返回最接近的和
+            return min;
+
+        };
+        // [-5, -5, -4, 0, 0, 3, 3, 4, 5]
+        console.log(threeSumClosest([4, 0, 5, -5, 3, 3, 0, -4, -5]));
+
+
+    </script>
+</body>
+
+</html>

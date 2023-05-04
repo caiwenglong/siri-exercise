@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+</body>
+<script>
+  /* 
+
+*/
+  let targetArr = [[1,2,3],[4,5,6],[7,8,9]]
+
+  function flatArr(arr) {
+    let n = arr.length // 行数
+    let m = arr[0].length // 列数
+    let i = 0 // 对应的行数
+    let j = 0 // 对应的列数
+    let dirc = true // 方向：true 右上 false 左下
+
+    let targetArr = [] // 得到的结果数组
+
+    // 遍历到最后一个时才停止遍历
+    while (i < n && j < m) {
+      targetArr.push(arr[i][j]) // 先把第一个放进去
+
+      // 如果方向是右上，那么 i = i - 1   j = j + 1
+      if (dirc) {
+        i -= 1
+        j += 1
+      } else {
+        // 如果是左下，那么 i = i + 1   j = j - 1
+        i += 1
+        j -= 1
+      }
+
+      // 处理边界情况
+      /* 
+        1、当i < 0 || j < 0 || i == n || j == m时，就要转弯改变反向 dirc = !dirc
+      */
+      if (i < 0 || j < 0 || i == n || j == m) {
+
+        // 如果原本是右上的走势，有两种情况是需要反向的 
+        // 1、就是碰到上边界 也就是i < 0的情况， 还有另一种情况就是碰到右边界也就是 j > m 的情况
+        if (dirc) {
+          if (j < m) { // 碰到上边界
+            i = 0
+
+          } else { // 碰到右边界
+            i += 2
+            j--
+          }
+        } else {
+          // 如果原本是左下的走势，有两种情况是需要反向的 
+          // 1、就是碰到下边界 也就是i > n的情况， 还有另一种情况就是碰到左边界也就是 j < 0 的情况
+          if (i < n) { // 碰到右边界
+            j = 0
+
+          } else { // 碰到下边界
+            i--
+            j += 2
+          }
+        }
+        dirc = !dirc
+      }
+    }
+    console.log(targetArr);
+  }
+
+  console.log(flatArr(targetArr));
+</script>
+
+</html>

@@ -1,0 +1,71 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-10-22 14:50:50
+ * @LastEditTime: 2021-10-22 15:44:04
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \siri-exercise\src\leetCode\长度最小的子数组.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- 
+    给定一个含有 n 个正整数的数组和一个正整数 target 。
+    找出该数组中满足其和 ≥ target 的长度最小的 连续子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，
+    并返回其长度。如果不存在符合条件的子数组，返回 0 。
+
+    输入：target = 7, nums = [2,3,1,2,4,3]
+    输出：2
+    解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+
+    输入：target = 4, nums = [1,4,4]
+    输出：1
+
+    输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+    输出：0
+   -->
+  <script>
+    /**
+     * @description: 
+     * @param {*} target
+     * @param {*} nums
+     * @return {*}
+     * 解法：1、找出第一个满足的子数组
+     *      2、如果选出的数组和大于 target  那么就将找出的数组第一项踢出
+     */
+    const minSubArrayLen = function (target, nums) {
+      // 注：因为这个是要求连续最小数组， 故不能打乱原来的数组也不能对数组进行排序
+      let i = 0 // 指针 1
+      let j = 0 // 指针 2
+      // 这边length为啥要这样设置？ 因为要找出最小子数组的长度，故不能设置为0, 只能按照做大的值来设置
+      // 如果到最后length 的值大于 num.length   那么就说明没有最小子数组， 故返回0
+      let length = nums.length + 1 
+      sum = 0
+      result = 0
+
+      while(j < nums.length) {
+        sum += nums[j]
+        while(sum >= target) {
+          sum -= nums[i]
+          length = length > j - i + 1 ? j - i + 1 : length
+          i ++
+        }
+        j ++
+      }
+      result = length > nums.length  ? 0 : length
+      return result 
+
+    };
+    console.log(minSubArrayLen(11, [1,1,1,1,1,1,1,1]));
+  </script>
+</body>
+
+</html>
