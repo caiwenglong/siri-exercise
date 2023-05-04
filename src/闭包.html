@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闭包</title>
+</head>
+
+<body>
+    <script>
+        // 闭包的概念：闭包是指有权访问另外一个函数作用域中变量的函数。
+
+        // 有一下三种情况：
+
+        // 1、函数被当作返回值返回
+        var a = 2
+        function fun1() {
+            var a = 1;
+            return function () {
+                console.log(a) // 这个a 的值是1 ，
+                // 解释：这个 a 是自由变量，自由变量的值应该是在它所在的function同一级的作用域中查找
+                //      这边跟function 同一级的a的值是 1 所以这边的值是 1
+            }
+        }
+        var ex1 = fun1();
+        ex1();
+
+        // 2、函数作为参数的情况
+        function fun2(cb) {
+            var b = 100;
+            cb();
+        }
+
+        var b = 200;
+        fun2(function () {
+            console.log(b) // 这边输出的值是200
+            // 解释：这边b所在的function中没有 b 的定义，所以 b 是自由变量，自由变量的值是到所在function同级作用域中取的 ， 
+            // 这边function 同级的作用域是 var b = 200； 所以值为200
+        });
+
+        // 3、自执行匿名函数
+        (function (index) {
+            console.log(index)
+        })(10)
+
+
+
+        // 闭包的作用：
+        // 1、实现公有和私有变量或者方法，
+        // 2、实现变量长期存储
+        // 3、让变量不受全局作用域的影响
+        // 4、利用闭包缓存函数参数
+
+
+        /**
+         * 1、实现公有和私有变量或方法 
+         */
+        function counter() {
+            // 私有变量
+            let count = 0;
+
+            // 私有方法
+            function increment() {
+                count++
+
+            }
+
+            return {
+                // 公有方法
+                getCount: function () {
+                    console.log(count)
+                    return count
+                },
+
+                // 公有方法
+                add: function () {
+                    increment();
+                }
+            }
+        }
+
+        let countObj = counter();
+        countObj.getCount(); // 调用公有方法
+        countObj.add(); // 调用公有方法
+        countObj.getCount(); // 调用公有方法
+
+        /**
+         * 2、实现变量长期存储 
+         */
+        function getFunArr() {
+            let funs = []
+            for (let i = 0; i < 5; i++) {
+                funs.push(function () {
+                    console.log(i)
+                })
+            }
+
+            return funs;
+        }
+        var funArr = getFunArr();
+        for (let j = 0; j < funArr.length; j++) {
+            funArr[j](); // 输出 0, 1, 2, 3, 4
+        }
+
+
+        // 3、让变量不受全局作用域的影响
+        function outer() {
+            let x = 10;
+
+            return function inner() {
+                console.log(x)
+            }
+        }
+        let innerFn = outer();
+        innerFn();
+
+
+        // 4、实现参数的记忆化
+        function memoizedAdd() {
+            let cache = {};
+
+            return function (x, y) {
+                if (x + "," + y in cache) {
+                    console.log("cached result");
+                    return cache[x + "," + y];
+                }
+                else {
+                    console.log("new result");
+                    let result = x + y;
+                    cache[x + "," + y] = result;
+                    return result;
+                }
+            }
+        }
+        // 创建带有记忆化功能的函数
+        let add = memoizedAdd();
+
+        // 第一次调用
+        console.log(add(5, 3)); // new result, 输出 8
+
+        // 第二次调用
+        console.log(add(5, 3)); // cached result, 输出 8
+
+        // 第三次调用
+        console.log(add(7, 2)); // new result, 输出 9
+    </script>
+
+</body>
+
+</html>
