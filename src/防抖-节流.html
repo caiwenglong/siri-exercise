@@ -37,19 +37,14 @@ const debounce = (fn, delay) => {
     // 清除上一个定时器
     clearTimeout(timeoutID)
     timeoutID = setTimeout(() => {
-
       // 调用要执行的方法fn
       fn.call(_this, args)
-
     }, delay)
   }
 }
-
 </script>
 
-
 <script>
-
 /**
  * 节流：在delay的时间内只调用一次，比如： delay = 1000, 那么在一秒内只会调用一次，如果调用多次，那么就只要第一次调用的才会生效
  * @param fn
@@ -68,20 +63,15 @@ const throttle = (fn, delay) => {
     },delay)
   }
 }
-
 </script>
 
 <script>
-
-
 // 获得input元素
 const inputEle = document.getElementById("inputDebounce")
-
 //模拟一段ajax请求
 function ajax(content) {
   console.log('ajax request： ' + content)
 }
-
 // 目的： 等用户输完信息在开始调用，使用防抖函数
 const debounceAjax = debounce(ajax, 1000)
 
